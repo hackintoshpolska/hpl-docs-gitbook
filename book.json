@@ -1,0 +1,34 @@
+{
+	"root" : "./docs",
+    "language" : "pl",
+    "title" : "Poradniki Hackintosh Polska",
+	"plugins" : ["hints", "ga", "adsense", "chapter-fold", "insert-logo", "youtube"],
+	"pluginsConfig": {
+		"ga": {
+			"token": ""
+		},
+		"adsense": {
+        "client": "",
+        "slot": "",
+        "format": "auto",
+        "element": ".page-inner section",
+        "position": "bottom"
+    },
+		"insert-logo": {
+      "url": "/img/logo.png",
+      "style": "background: none; max-width: 200px;"
+    },
+		"sharing": {
+      "facebook": false,
+      "twitter": false,
+      "google": false,
+      "weibo": false,
+      "instapaper": false,
+      "vk": false,
+      "all": ["facebook", "google", "twitter"]
+		}
+  },
+  "styles": {
+      "website": "styles/website.css"
+  }
+}

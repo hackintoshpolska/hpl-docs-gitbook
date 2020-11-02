@@ -1,0 +1,9 @@
+runtime: custom
+env: flex
+service: docs-test
+
+handlers:
+- url: /.*
+  secure: always
+  redirect_http_response_code: 301
+  script: auto

@@ -1,0 +1,70 @@
+image: node:lts-alpine
+
+# cache:
+#   key: ${CI_COMMIT_REF_SLUG}
+#   paths:
+#     - node_modules/
+
+before_script:
+  - npm install -g gitbook-cli
+  - gitbook install
+
+stages:
+  - build
+  - deploy
+
+
+Build HTML:
+  stage: build
+  script:
+    - gitbook build
+  artifacts:
+    paths:
+      - ./_book/
+    expire_in: 1 week
+
+Build PDF and ebook formats:
+  image: python:2
+  allow_failure: true
+  services:
+    - node:lts-alpine
+  stage: build
+  script:
+    - wget -nv -O- https://download.calibre-ebook.com/linux-installer.sh | sh /dev/stdin
+    - npm install -g ebook-convert
+    - gitbook pdf . ./${CI_COMMIT_REF_SLUG}.pdf
+    - gitbook epub . ./${CI_COMMIT_REF_SLUG}.epub
+    - gitbook mobi . ./${CI_COMMIT_REF_SLUG}.mobi
+  artifacts:
+    paths:
+      - ./${CI_COMMIT_REF_SLUG}.pdf
+      - ./${CI_COMMIT_REF_SLUG}.epub
+      - ./${CI_COMMIT_REF_SLUG}.mobi
+    expire_in: 1 week
+
+# Deploy to staging:
+#   image: google/cloud-sdk:alpine
+#   stage: deploy
+#   environment:
+#     name: staging
+#     url: https://test.poradniki.hackintoshpolska.pl/
+#   before_script:
+#     - gcloud auth activate-service-account --key-file $SERVICE_ACCOUNT
+#   script:
+#     - gcloud --project $PROJECT_ID app deploy app.staging.yaml --version $CI_COMMIT_SHORT_SHA
+#   only:
+#     - master
+
+Deploy:
+  image: google/cloud-sdk:alpine
+  stage: deploy
+  environment:
+    name: staging
+    url: https://poradniki.hackintoshpolska.pl/
+  before_script:
+    - gcloud auth activate-service-account --key-file $SERVICE_ACCOUNT
+  script:
+    - gcloud --project $PROJECT_ID app deploy app.yaml --version $CI_COMMIT_SHORT_SHA
+  only:
+    - master
+  
